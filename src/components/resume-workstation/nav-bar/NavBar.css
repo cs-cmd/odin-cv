@@ -1,0 +1,9 @@
+.menu-bar {
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    max-width: 85px;
+    gap: .5rem;
+}
+
