@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import NavItem from './NavItem';
-import './NavBar.css';
+import './styles/NavBar.css';
 import { iconList } from '../../../assets/data-objects/menu-tabs';
 
 export default function NavBar() {

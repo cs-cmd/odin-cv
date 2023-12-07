@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './NavItem.css';
+import './styles/NavItem.css';
 
 export default function NavItem({itemId, tabName, isSelected, changeTabFunc, iconSrc}) {
     return (
