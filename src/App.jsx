@@ -18,7 +18,7 @@ function App() {
 
   return (
     <main className='main-app'>
-        <ResumeWorkstation handleObjectChange={handleObjectChange}/>
+        <ResumeWorkstation handleObjectChange={handleObjectChange} personObject={personObject}/>
 
         <ResumePreview resumeObject={personObject}/>
 
