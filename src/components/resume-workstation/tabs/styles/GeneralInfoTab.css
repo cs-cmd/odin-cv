@@ -1,6 +1,0 @@
-.general-info-tab {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: min(50%, 500px);
-}

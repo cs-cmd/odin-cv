@@ -2,7 +2,18 @@ body {
     margin: 0px;
 }
 
-.main-app {
+body > div {
+  display: flex;
+}
+
+.workstation {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     gap: 1rem;
+    width: 50%;
+}
+
+.preview {
+  width: 50%;
 }
