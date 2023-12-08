@@ -5,11 +5,14 @@ html {
 
 body {
   margin: 5px;
+  display: flex;
+  justify-content: center;
 }
 
 #root {
   display: flex;
   gap: 1rem;
+  width: clamp(500px, 75%, 1000px);
 }
 
 .workstation {
@@ -25,5 +28,4 @@ body {
   height: fit-content;
   position: sticky;
   top: 5px;
-  aspect-ratio: 1/1.294;
 }

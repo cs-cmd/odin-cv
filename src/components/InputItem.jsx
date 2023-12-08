@@ -1,6 +1,6 @@
 import './styles/InputItem.css';
 
-export default function InputItem({children, labelName, type = 'text', isDisabled = false, nameOnForm, placeholder, onChange, isRequired = false}) {
+export default function InputItem({children, labelName, type = 'text', isDisabled = false, nameOnForm, placeholder, onChange, isRequired = true}) {
   return (
     <div className='input-item'>
       <label>{labelName}</label>

@@ -5,6 +5,7 @@ import { personBlank } from './assets/data-objects/person-blank';
 import InputItem from './components/InputItem';
 import InputTab from './components/InputTab';
 import EducationPreview from './components/workstation/EducationPreview';
+import { getDefinitionOrNull } from './custom-hooks';
 
 function App() {
   // on change to resume workstation inputs, apply change to various fields
@@ -22,7 +23,6 @@ function App() {
   const [canEnterWorkInfo, setCanEnterWorkInfo] = useState(false);
   const [newWork, setNewWork] = useState({});
   const [isCurrentEmployer, setIsCurrentEmployer] = useState(false);
-
 
   // handle any field's object change
   function handleFieldChange(field, value) {
@@ -75,7 +75,6 @@ function App() {
     const newWorkArray = [...resumeObject.work];
     newWorkArray.push({...newWork, id: crypto.randomUUID()});
 
-    console.log(newWorkArray);
     handleFieldChange('work', newWorkArray);
 
     setCanEnterWorkInfo(false);
@@ -96,8 +95,112 @@ function App() {
     handleFieldChange(field, newArray);
   }
 
+  // values for mapping InputItems in the Biographical section
+  const bioInputValues = [
+    {
+      labelName: 'Full Name',
+      nameOnForm: 'full_name',
+      placeholder: 'John Doe',
+      fieldName: 'name',
+    },
+    {
+      labelName: 'Email',
+      type: 'email',
+      nameOnForm: 'email',
+      placeholder: 'example@example.com',
+      fieldName: 'email',
+    },
+    {
+      labelName: 'Phone Number',
+      type: 'tel',
+      nameOnForm: 'phone',
+      placeholder: '000-000-0000',
+      fieldName: 'phone',
+    }
+  ];
+
+  const educationInputValues = [
+    {
+      labelName: 'School Name',
+      nameOnForm: 'school_name',
+      placeholder: 'Example University',
+      fieldName: 'name',
+    },
+    {
+      labelName: 'Location',
+      nameOnForm: 'location',
+      placeholder: '123 Example St., Example, EX',
+      fieldName: 'location',
+    },
+    {
+      labelName: 'Curriculum',
+      nameOnForm: 'curriculum',
+      placeholder: 'Degree',
+      fieldName: 'curriculum',
+    },
+    {
+      labelName: 'Start Date',
+      nameOnForm: 'from',
+      type: 'date',
+      fieldName: 'from',
+    },
+    {
+      labelName: 'End Date',
+      nameOnForm: 'to',
+      type: 'date',
+      isRequired: !isCurrentlyAttending,
+      isDisabled: isCurrentlyAttending,
+      fieldName: 'to',
+    },
+    {
+      labelName: 'Currently Attending?',
+      nameOnForm: 'isAttending',
+      type: 'checkbox',
+      onChange: (e) => {
+        handleStillAttendingClick(e.target.checked)
+      },
+    }
+  ];
+         
+  const workInputValues = [
+    {
+      labelName: 'Company Name',
+      nameOnForm: 'company_name',
+      placeholder: 'Example, Inc.',
+      fieldName: 'company',
+    },
+    {
+      labelName: 'Position',
+      nameOnForm: 'company_position',
+      placeholder: 'Worker',
+      fieldName: 'position',
+    },
+    {
+      labelName: 'Start Date',
+      nameOnForm: 'from',
+      type: 'date',
+      fieldName: 'from',
+    },
+    {
+      labelName: 'End Date',
+      nameOnForm: 'to',
+      type: 'date',
+      isDisabled: isCurrentEmployer,
+      isRequired: !isCurrentEmployer,
+      fieldName: 'to',
+    },
+    {
+      labelName: 'Current Employer?',
+      nameOnForm: 'isCurrentEmployer',
+      type: 'checkbox',
+      onChange: (e) => {
+        handleCurrentEmployerToggle(e.target.checked);
+      }
+    }
+  ]
+
   // education page items for preview, reverse-chronological order
-  const educationItems = resumeObject.education.map((ele) =>{
+  const educationPreviewItems = resumeObject.education.map((ele) =>{
     return (
       <EducationPreview key={ele.id+'ws-prev'} education={ele}>
         <button type='button' onClick={() => handleDeleteItemClick(resumeObject.education, ele, 'education')}>Delete</button>
@@ -105,7 +208,7 @@ function App() {
     );
   }).reverse();
 
-  const workItems = resumeObject.work.map((ele) => {
+  const workPreviewItems = resumeObject.work.map((ele) => {
     return (
       <p>{ele.company}</p>
     )
@@ -114,58 +217,72 @@ function App() {
   return (
     <>
       <main className='workstation'>
-        <InputTab header='Biographical Information'>
-          <InputItem labelName='Full Name' nameOnForm='name' placeholder='John Doe' isRequired={true} onChange={(e) => handleFieldChange('name', e.target.value)} />
-          <InputItem labelName='Email' type='email' nameOnForm='email' placeholder='example@example.com' isRequired={true} onChange={(e) => handleFieldChange('email', e.target.value)}/>
-          <InputItem labelName='Phone Number' type='tel' nameOnForm='phone' placeholder='000-000-0000' isRequired={true} onChange={(e) => handleFieldChange('phone', e.target.value)}/>
+        <InputTab header='Biographical Information'
+          formChildren={
+            bioInputValues.map((item) => <InputItem key={item.nameOnForm}
+                labelName={item.labelName}
+                nameOnForm={item.nameOnForm}
+                placeholder={item.placeholder}
+                type={item.type !== undefined ? item.type : ''}
+                onChange={(e) => handleFieldChange(item.fieldName, e.target.value)}
+              />)
+            }>
+    
         </InputTab>
+
 
         <InputTab header='Education'
           formChildren={
-            canEnterEducation && 
-            <>
-              <InputItem labelName='School Name' nameOnForm='schoolName' placeholder='Test University' isRequired={true} onChange={((e) => handleNewEducationInput('name', e.target.value))}/>
-              <InputItem labelName='Location' nameOnForm='schoolLocation' placeholder='1223 South St., Your State' isRequired={true} onChange={((e) => handleNewEducationInput('location', e.target.value))}/>
-              <InputItem labelName='Curriculum' nameonForm='schoolCurriculum' placeholder='Degree' isRequired={true} onChange={((e) => handleNewEducationInput('curriculum', e.target.value))}/>
-              <InputItem labelName='Start Date' nameOnForm='schoolFromDate' type='date' isRequired={true} onChange={((e) => handleNewEducationInput('from', e.target.value))}/>
-              <InputItem labelName='End Date' nameOnForm='schoolEndDate' type='date' isRequired={!isCurrentlyAttending} isDisabled={isCurrentlyAttending} onChange={((e) => handleNewEducationInput('to', e.target.value))}/>
-              <InputItem labelName='Still attending?' type='checkbox' nameOnForm='isStillAttending' onChange={(e) => handleStillAttendingClick(e.target.checked)}/>
-              <div className='buttons-div'>
-                <button type='button' onClick={() => setCanEnterEducation(false)}>X</button>
-                <button type='button' onClick={handleSaveEducation}>Save</button>
-              </div>
-  
-            </>
-            ||
+            canEnterEducation ?
+              <>  
+                {educationInputValues.map((item) => 
+                  <InputItem labelName={item.labelName}
+                    key={item.nameOnForm}
+                    name={item.nameOnForm}
+                    placeholder={getDefinitionOrNull(item.placeholder)}
+                    type={getDefinitionOrNull(item.type)}
+                    onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewEducationInput(item.fieldName, e.target.value))}
+                    isRequired={getDefinitionOrNull(item.isRequired)}
+                    isDisabled={getDefinitionOrNull(item.isDisabled)}
+                  />)}
+
+                <div className='buttons-div'>
+                  <button type='button' onClick={() => setCanEnterEducation(false)}>X</button>
+                  <button type='button' onClick={handleSaveEducation}>Save</button>
+                </div>
+              </>
+            :
             <button type='button' onClick={() => {setCanEnterEducation(true)}}>+</button>  
           } 
-          otherItems={
-            educationItems.length > 0 &&
-            educationItems
-          }/>
+          otherItems={educationPreviewItems}>
+
+        </InputTab>
+
 
         <InputTab header='Work History'
           formChildren={
             canEnterWorkInfo &&
             <>
-              <InputItem labelName='Company Name' nameOnForm='companyName' placeholder='Example, Inc.' isRequired={true} onChange={(e) => handleNewWorkInput('company', e.target.value)}/>
-              <InputItem labelName='Position' nameOnForm='companyPosition' placeholder='Worker' isRequired={true} onChange={(e) => handleNewWorkInput('position', e.target.value)}/>
-              <InputItem labelName='Start Date' nameOnForm='companyStartDate' type='date' isRequired={true} onChange={(e) => handleNewWorkInput('from', e.target.value)}/>
-              <InputItem labelName='End Date' nameOnForm='schoolEndDate' type='date' isRequired={!isCurrentEmployer} isDisabled={isCurrentEmployer} onChange={(e) => handleNewWorkInput('to', e.target.value)}/>
-              <InputItem labelName='Current Employer' type='checkbox' nameOnForm='isCurrentEmployer' onChange={(e) => handleCurrentEmployerToggle(e.target.checked)}/>
+              {workInputValues.map((item) => 
+              <InputItem labelName={item.labelName}
+                key={item.nameOnForm}
+                nameOnForm={item.nameOnForm}
+                placeholder={item.placeholder}
+                type={item.type}
+                onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewWorkInput(item.fieldName, e.target.value))}
+              />)}
               <textarea className='long-text' name='jobDescription' onChange={(e) => handleNewWorkInput('description', e.target.value)}></textarea>
               <div className='buttons-div'>
                 <button type='button' onClick={() => setCanEnterWorkInfo(false)}>X</button>
                 <button type='button' onClick={handleSaveWork}>Save</button>
               </div>
-
             </>
             ||
             <button type='button' onClick={() => {setCanEnterWorkInfo(!canEnterWorkInfo)}}>+</button>
           }
           otherItems={
-            workItems.length > 0 &&
-            workItems
+            workPreviewItems.length > 0 &&
+            workPreviewItems
           }/>
 
         <InputTab header='Skills'>
@@ -175,16 +292,21 @@ function App() {
         <button onClick={() => setResumeObject(personExample)}>Load example</button>
       </main>
 
+
+
+
+
+
       <section className='preview'>
           <h3>Name: {resumeObject.name}</h3>
           <h3>Email: {resumeObject.email}</h3>
           <h3>Phone: {resumeObject.phone}</h3>
 
-          {educationItems.length > 0 &&
-           educationItems}
+          {educationPreviewItems.length > 0 &&
+           educationPreviewItems}
 
-          {workItems.length > 0 &&
-          workItems}
+          {workPreviewItems.length > 0 &&
+          workPreviewItems}
       </section>
     </>
   )
