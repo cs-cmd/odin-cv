@@ -4,7 +4,7 @@ export default function InputTab({header, children}) {
   return ( 
     <div className='panel'>
       <h3>{header}</h3>
-      <form>
+      <form className='input-tab-form'>
         {children}
       </form>
     </div>

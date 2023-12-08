@@ -17,3 +17,12 @@ body > div {
 .preview {
   width: 50%;
 }
+
+.buttons-div {
+  display: flex;
+  gap: 1rem;
+}
+
+.buttons-div > * {
+  flex: 1;
+}

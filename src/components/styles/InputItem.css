@@ -1,0 +1,5 @@
+.input-item {
+  display: flex;
+  justify-self: space-between;
+  flex-direction: column;
+}

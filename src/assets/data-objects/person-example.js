@@ -4,11 +4,12 @@ export const personExample = {
   phone: '000-000-0000',
   education: [
     {
-      name: 'Test University',
-      location: 'NY',
-      from: '10/10/2010',
-      to: '10/10/2010',
-      major: 'Computer Science',
+      schoolName: 'Test University',
+      schoolLocation: 'NY',
+      schoolFromDate: '10/10/2010',
+      schoolEndDate: '10/10/2010',
+      schoolCurriculum: 'Computer Science',
+      isStillAttending: false,
     },
   ],
   work: [
