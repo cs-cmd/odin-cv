@@ -1,0 +1,13 @@
+.education-preview {
+  border: 2px dashed black;
+  box-sizing: border-box;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.education-preview > * {
+  margin: 0px;
+  padding: 0px;
+}

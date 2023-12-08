@@ -1,9 +1,15 @@
-body {
-    margin: 0px;
+html {
+  height: 100dvh;
+  scrollbar-width: none;
 }
 
-body > div {
+body {
+  margin: 5px;
+}
+
+#root {
   display: flex;
+  gap: 1rem;
 }
 
 .workstation {
@@ -16,13 +22,8 @@ body > div {
 
 .preview {
   width: 50%;
-}
-
-.buttons-div {
-  display: flex;
-  gap: 1rem;
-}
-
-.buttons-div > * {
-  flex: 1;
+  height: fit-content;
+  position: sticky;
+  top: 5px;
+  aspect-ratio: 1/1.294;
 }
