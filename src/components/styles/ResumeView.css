@@ -3,13 +3,21 @@
   height: fit-content;
   position: sticky;
   top: 5px;
+  border: 1px solid black;
+  aspect-ratio: 3/4;
 }
+
 .header-bio {
   text-align: center;
+  font-size: 1em;
 }
 
 .contact {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.contact-title {
+  margin: 5px;
 }

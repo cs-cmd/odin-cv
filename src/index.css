@@ -1,4 +1,15 @@
 :root {
   --background: #fdfdfd;
   --background-tint: #838383;
+  --accent-color: #32CDA0;
+}
+
+.header-text,
+.header-title {
+  text-align: center;
+}
+
+.header, .footer {
+  background-color: var(--accent-color);
+  width: 100%;
 }

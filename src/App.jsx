@@ -4,11 +4,10 @@ import { personExample } from './assets/data-objects/person-example';
 import { personBlank } from './assets/data-objects/person-blank';
 import InputItem from './components/InputItem';
 import InputTab from './components/InputTab';
-import { getDefinitionOrNull } from './custom-hooks';
+import { getDefinitionOrNull } from './misc/custom-hooks';
 import { formatBioInputValues, formatEducationInputValues, formatWorkInputValues } from './assets/data-objects/input-item-values';
 import RecordPreview from './components/workstation/RecordPreview';
 import ResumeView from './components/resume-view/ResumeView';
-import links from './assets/data-objects/links';
 
 function App() {
   // on change to resume workstation inputs, apply change to various fields
@@ -50,39 +49,35 @@ function App() {
     setNewEducation(updatedEducation);
   }
 
-  // on 'save' record clicked, generate new random UUID and insert
-  function handleSaveEducation() {
-    const newEducationArray = [...resumeObject.education];
-    newEducationArray.push({...newEducation, id: crypto.randomUUID()});
 
-    handleFieldChange('education', newEducationArray);
-    
-    setCanEnterEducation(false);
-    setIsCurrentlyAttending(false);
-    setNewEducation({});
-  }
-
+  // handle click for toggling current employer
   function handleCurrentEmployerToggle(isChecked) {
     setIsCurrentEmployer(isChecked);
     handleNewWorkInput('to', null);
     handleNewWorkInput('isAttending', isChecked);
   }
 
+  // handle click for handling new work input
   function handleNewWorkInput(field, value) {
     const updatedWork = {...newWork};
     updatedWork[field] = value;
     setNewWork(updatedWork);
   }
 
-  function handleSaveWork() {
-    const newWorkArray = [...resumeObject.work];
-    newWorkArray.push({...newWork, id: crypto.randomUUID()});
+  // loads new array with new item (or replaces if editing)
+  function determineIfEdit(passingArray, currentState) {
+    const newArray = [...passingArray];
 
-    handleFieldChange('work', newWorkArray);
+    for(let i = 0; i < passingArray.length; i++) {
+      if(passingArray[i].id === currentState.id) {
+        newArray[i] = currentState;
+        return newArray;
+      }
+    }
 
-    setCanEnterWorkInfo(false);
-    setIsCurrentEmployer(false);
-    setNewWork({});
+    newArray.push({...currentState, id: crypto.randomUUID()});
+
+    return newArray;
   }
 
   // handle if requested item has 'deleted' button (and is pressed)
@@ -118,6 +113,11 @@ function App() {
       }>
         <button type='button' 
           onClick={() => handleDeleteItemClick(resumeObject.education, ele, 'education')}>Delete</button>
+        <button type='button'
+          onClick={() => {
+            setNewEducation(ele);
+            setCanEnterEducation(true);
+          }}>Edit</button>
       </RecordPreview>
     );
   }).reverse();
@@ -135,16 +135,18 @@ function App() {
       }>
         <button type='button' 
           onClick={() => handleDeleteItemClick(resumeObject.work, ele, 'work')}>Delete</button>
+        <button type='button'
+          onClick={() => {
+            setNewWork(ele)
+            setCanEnterWorkInfo(true);
+          }}>Edit
+        </button>
       </RecordPreview>
     );
   })
 
   return (
     <>
-      <header className='header'>
-        <h1 className='header-title'>CV Creator</h1>
-      </header>
-
       <main className='workstation'>
         <section className='ws-element forms'>
           <InputTab header='Biographical Information'
@@ -171,6 +173,7 @@ function App() {
                       name={item.nameOnForm}
                       placeholder={getDefinitionOrNull(item.placeholder)}
                       type={getDefinitionOrNull(item.type)}
+                      value={newEducation[item.fieldName]}
                       onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewEducationInput(item.fieldName, e.target.value))}
                       isRequired={getDefinitionOrNull(item.isRequired)}
                       isDisabled={getDefinitionOrNull(item.isDisabled)}
@@ -178,7 +181,14 @@ function App() {
 
                   <div className='buttons-div'>
                     <button type='button' onClick={() => setCanEnterEducation(false)}>X</button>
-                    <button type='button' onClick={handleSaveEducation}>Save</button>
+                    <button type='button' onClick={() => {
+                          const newEducationArray = determineIfEdit(resumeObject.education, newEducation);
+                          handleFieldChange('education', newEducationArray);
+                          
+                          setCanEnterEducation(false);
+                          setIsCurrentlyAttending(false);
+                          setNewEducation({});
+                    }}>Save</button>
                   </div>
                 </>
               :
@@ -199,6 +209,7 @@ function App() {
                   nameOnForm={item.nameOnForm}
                   placeholder={item.placeholder}
                   type={item.type}
+                  value={newWork[item.fieldName]}
                   isRequired={getDefinitionOrNull(item.isRequired)}
                   isDisabled={getDefinitionOrNull(item.isDisabled)}
                   onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewWorkInput(item.fieldName, e.target.value))}
@@ -206,7 +217,14 @@ function App() {
                 <textarea className='long-text' name='jobDescription' onChange={(e) => handleNewWorkInput('description', e.target.value)}></textarea>
                 <div className='buttons-div'>
                   <button type='button' onClick={() => setCanEnterWorkInfo(false)}>X</button>
-                  <button type='button' onClick={handleSaveWork}>Save</button>
+                  <button type='button' onClick={() => {
+                        const newWorkArray = determineIfEdit(resumeObject.work, newWork);
+                        handleFieldChange('work', newWorkArray);
+                    
+                        setCanEnterWorkInfo(false);
+                        setIsCurrentEmployer(false);
+                        setNewWork({});
+                  }}>Save</button>
                 </div>
               </>
               ||
@@ -229,11 +247,6 @@ function App() {
 
         <ResumeView className='ws-element' resumeObject={resumeObject}/>
       </main>
-
-      <footer className='footer'>
-        <p className='footer-text'>View source code <a href={links.src}>here</a>.</p>
-        <p className='footer-text'>cs-cmd | &#169; {new Date().getFullYear()}, all rights reserved.</p>
-      </footer>
     </>
   )
 }

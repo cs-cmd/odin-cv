@@ -1,5 +1,7 @@
 import '../styles/ResumeView.css'
 import ResumeSectionHeader from './ResumeSectionHeader';
+const callIcon = '/src/assets/icons/material-call.svg';
+const emailIcon = '/src/assets/icons/material-mail.svg';
 
 export default function ResumeView({resumeObject}) {
   const { name, 
@@ -16,8 +18,8 @@ export default function ResumeView({resumeObject}) {
         {email.length > 0 &&
         (
           <div className='contact'>
-            <img alt='e:' src='../.'/>
-            <h3>{email}</h3>
+            <img alt='e:' src={emailIcon}/>
+            <h3 className='contact-title'>{email}</h3>
           </div>
         )}
 
@@ -25,8 +27,8 @@ export default function ResumeView({resumeObject}) {
           phone.length > 0 &&
           (
             <div className='contact'>
-              <img alt='p:' src='../.'/>
-              <h3>{phone}</h3>
+              <img alt='p:' src={callIcon}/>
+              <h3 className='contact-title'>{phone}</h3>
             </div>
           )
         }
@@ -49,7 +51,7 @@ export default function ResumeView({resumeObject}) {
         </>
         )
       }
-      {skills !== null &&
+      {skills.length > 0 &&
         <>
           <ResumeSectionHeader header='Skills'/>
           <p>{skills}</p>

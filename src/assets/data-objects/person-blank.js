@@ -3,5 +3,6 @@ export const personBlank = {
   email: '',
   phone: '',
   education: [],
-  work: []
+  work: [],
+  skills: '',
 }
