@@ -6,6 +6,7 @@ import InputItem from './components/InputItem';
 import InputTab from './components/InputTab';
 import EducationPreview from './components/workstation/EducationPreview';
 import { getDefinitionOrNull } from './custom-hooks';
+import { formatBioInputValues, formatEducationInputValues, formatWorkInputValues } from './assets/data-objects/input-item-values';
 
 function App() {
   // on change to resume workstation inputs, apply change to various fields
@@ -62,7 +63,7 @@ function App() {
   function handleCurrentEmployerToggle(isChecked) {
     setIsCurrentEmployer(isChecked);
     handleNewWorkInput('to', null);
-    handleNewWorkInput('isAttending, isChecked');
+    handleNewWorkInput('isAttending', isChecked);
   }
 
   function handleNewWorkInput(field, value) {
@@ -95,109 +96,11 @@ function App() {
     handleFieldChange(field, newArray);
   }
 
-  // values for mapping InputItems in the Biographical section
-  const bioInputValues = [
-    {
-      labelName: 'Full Name',
-      nameOnForm: 'full_name',
-      placeholder: 'John Doe',
-      fieldName: 'name',
-    },
-    {
-      labelName: 'Email',
-      type: 'email',
-      nameOnForm: 'email',
-      placeholder: 'example@example.com',
-      fieldName: 'email',
-    },
-    {
-      labelName: 'Phone Number',
-      type: 'tel',
-      nameOnForm: 'phone',
-      placeholder: '000-000-0000',
-      fieldName: 'phone',
-    }
-  ];
 
-  const educationInputValues = [
-    {
-      labelName: 'School Name',
-      nameOnForm: 'school_name',
-      placeholder: 'Example University',
-      fieldName: 'name',
-    },
-    {
-      labelName: 'Location',
-      nameOnForm: 'location',
-      placeholder: '123 Example St., Example, EX',
-      fieldName: 'location',
-    },
-    {
-      labelName: 'Curriculum',
-      nameOnForm: 'curriculum',
-      placeholder: 'Degree',
-      fieldName: 'curriculum',
-    },
-    {
-      labelName: 'Start Date',
-      nameOnForm: 'from',
-      type: 'date',
-      fieldName: 'from',
-    },
-    {
-      labelName: 'End Date',
-      nameOnForm: 'to',
-      type: 'date',
-      isRequired: !isCurrentlyAttending,
-      isDisabled: isCurrentlyAttending,
-      fieldName: 'to',
-    },
-    {
-      labelName: 'Currently Attending?',
-      nameOnForm: 'isAttending',
-      type: 'checkbox',
-      onChange: (e) => {
-        handleStillAttendingClick(e.target.checked)
-      },
-    }
-  ];
-         
-  const workInputValues = [
-    {
-      labelName: 'Company Name',
-      nameOnForm: 'company_name',
-      placeholder: 'Example, Inc.',
-      fieldName: 'company',
-    },
-    {
-      labelName: 'Position',
-      nameOnForm: 'company_position',
-      placeholder: 'Worker',
-      fieldName: 'position',
-    },
-    {
-      labelName: 'Start Date',
-      nameOnForm: 'from',
-      type: 'date',
-      fieldName: 'from',
-    },
-    {
-      labelName: 'End Date',
-      nameOnForm: 'to',
-      type: 'date',
-      isDisabled: isCurrentEmployer,
-      isRequired: !isCurrentEmployer,
-      fieldName: 'to',
-    },
-    {
-      labelName: 'Current Employer?',
-      nameOnForm: 'isCurrentEmployer',
-      type: 'checkbox',
-      onChange: (e) => {
-        handleCurrentEmployerToggle(e.target.checked);
-      }
-    }
-  ]
+  //inputFormatters.
+  const bioInputValues = formatBioInputValues();
+  const educationInputValues = formatEducationInputValues((e) => handleStillAttendingClick(e.target.checked), isCurrentlyAttending);
+  const workInputValues = formatWorkInputValues((e) => handleCurrentEmployerToggle(e.target.checked), isCurrentEmployer);  
 
   // education page items for preview, reverse-chronological order
   const educationPreviewItems = resumeObject.education.map((ele) =>{
@@ -269,6 +172,8 @@ function App() {
                 nameOnForm={item.nameOnForm}
                 placeholder={item.placeholder}
                 type={item.type}
+                isRequired={getDefinitionOrNull(item.isRequired)}
+                isDisabled={getDefinitionOrNull(item.isDisabled)}
                 onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewWorkInput(item.fieldName, e.target.value))}
               />)}
               <textarea className='long-text' name='jobDescription' onChange={(e) => handleNewWorkInput('description', e.target.value)}></textarea>
@@ -285,8 +190,10 @@ function App() {
             workPreviewItems
           }/>
 
-        <InputTab header='Skills'>
-
+        <InputTab header='Skills'
+          formChildren={
+            <textarea className='long-text' onChange={(e) => handleFieldChange('skills', e.target.value)}>{resumeObject.skills}</textarea>
+          }>
         </InputTab>
 
         <button onClick={() => setResumeObject(personExample)}>Load example</button>

@@ -20,5 +20,6 @@ export const personExample = {
       to: '10/12/2010',
       description: 'Wrote code for money',
     },
-  ]
+  ],
+  skills: 'Writing code',
 }
