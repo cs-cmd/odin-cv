@@ -96,8 +96,14 @@ function App() {
 
   //inputFormatters.
   const bioInputValues = formatBioInputValues();
-  const educationInputValues = formatEducationInputValues((e) => handleStillAttendingClick(e.target.checked), isCurrentlyAttending);
-  const workInputValues = formatWorkInputValues((e) => handleCurrentEmployerToggle(e.target.checked), isCurrentEmployer);  
+  const educationInputValues = formatEducationInputValues((e) => {
+    handleStillAttendingClick(e.target.checked);
+    handleNewEducationInput('to', undefined);
+  }, isCurrentlyAttending);
+  const workInputValues = formatWorkInputValues((e) => {
+    handleCurrentEmployerToggle(e.target.checked);
+    handleNewWorkInput('to', undefined);
+  }, isCurrentEmployer);  
 
   // education page items for preview, reverse-chronological order
   const educationPreviewItems = resumeObject.education.map((ele) =>{
@@ -108,7 +114,7 @@ function App() {
           from: ele.from,
           to: ele.to, 
           desc: ele.curriculum,
-          subheader: ele.location
+          subheader: ele.location,
         }
       }>
         <button type='button' 
@@ -130,7 +136,7 @@ function App() {
           subheader: ele.position,
           from: ele.from,
           to: ele.to,
-          desc: ele.description
+          desc: ele.description,
         }
       }>
         <button type='button' 
