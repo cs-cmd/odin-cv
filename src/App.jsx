@@ -180,7 +180,14 @@ function App() {
                     />)}
 
                   <div className='buttons-div'>
-                    <button type='button' onClick={() => setCanEnterEducation(false)}>X</button>
+                    <button type='button' onClick={() => {
+                      setCanEnterEducation(false);
+
+                      // if edited, and cancelled, reset
+                      if(newEducation !== null) {
+                        setNewEducation({});
+                      }
+                    }}>X</button>
                     <button type='button' onClick={() => {
                           const newEducationArray = determineIfEdit(resumeObject.education, newEducation);
                           handleFieldChange('education', newEducationArray);
@@ -216,7 +223,14 @@ function App() {
                 />)}
                 <textarea className='long-text' name='jobDescription' onChange={(e) => handleNewWorkInput('description', e.target.value)}></textarea>
                 <div className='buttons-div'>
-                  <button type='button' onClick={() => setCanEnterWorkInfo(false)}>X</button>
+                  <button type='button' onClick={() => {
+                    setCanEnterWorkInfo(false);
+
+                    // if editing, reset
+                    if(newWork !== null) {
+                      setNewWork({});
+                    }
+                  }}>X</button>
                   <button type='button' onClick={() => {
                         const newWorkArray = determineIfEdit(resumeObject.work, newWork);
                         handleFieldChange('work', newWorkArray);
