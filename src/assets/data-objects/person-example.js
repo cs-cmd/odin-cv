@@ -19,6 +19,7 @@ export const personExample = {
       from: '10/11/2010',
       to: '10/12/2010',
       description: 'Wrote code for money',
+      isCurrentEmployer: false,
     },
   ],
   skills: 'Writing code',

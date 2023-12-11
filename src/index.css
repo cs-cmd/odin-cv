@@ -1,4 +1,4 @@
 :root {
-    --default-button-color: #67CBDA;
-    --default-button-selected: #DA7567;
+  --background: #fdfdfd;
+  --background-tint: #838383;
 }

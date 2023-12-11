@@ -1,0 +1,15 @@
+.preview {
+  width: 50%;
+  height: fit-content;
+  position: sticky;
+  top: 5px;
+}
+.header-bio {
+  text-align: center;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

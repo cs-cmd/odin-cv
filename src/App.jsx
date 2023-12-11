@@ -4,9 +4,11 @@ import { personExample } from './assets/data-objects/person-example';
 import { personBlank } from './assets/data-objects/person-blank';
 import InputItem from './components/InputItem';
 import InputTab from './components/InputTab';
-import EducationPreview from './components/workstation/EducationPreview';
 import { getDefinitionOrNull } from './custom-hooks';
 import { formatBioInputValues, formatEducationInputValues, formatWorkInputValues } from './assets/data-objects/input-item-values';
+import RecordPreview from './components/workstation/RecordPreview';
+import ResumeView from './components/resume-view/ResumeView';
+import links from './assets/data-objects/links';
 
 function App() {
   // on change to resume workstation inputs, apply change to various fields
@@ -105,116 +107,133 @@ function App() {
   // education page items for preview, reverse-chronological order
   const educationPreviewItems = resumeObject.education.map((ele) =>{
     return (
-      <EducationPreview key={ele.id+'ws-prev'} education={ele}>
-        <button type='button' onClick={() => handleDeleteItemClick(resumeObject.education, ele, 'education')}>Delete</button>
-      </EducationPreview>
+      <RecordPreview key={ele.id+'-ws-prev'} previewItem={
+        {        
+          header: ele.name,
+          from: ele.from,
+          to: ele.to, 
+          desc: ele.curriculum,
+          subheader: ele.location
+        }
+      }>
+        <button type='button' 
+          onClick={() => handleDeleteItemClick(resumeObject.education, ele, 'education')}>Delete</button>
+      </RecordPreview>
     );
   }).reverse();
 
   const workPreviewItems = resumeObject.work.map((ele) => {
     return (
-      <p>{ele.company}</p>
-    )
+      <RecordPreview key={ele.id+'-ws-prev'} previewItem={
+        {
+          header: ele.company,
+          subheader: ele.position,
+          from: ele.from,
+          to: ele.to,
+          desc: ele.description
+        }
+      }>
+        <button type='button' 
+          onClick={() => handleDeleteItemClick(resumeObject.work, ele, 'work')}>Delete</button>
+      </RecordPreview>
+    );
   })
 
   return (
     <>
+      <header className='header'>
+        <h1 className='header-title'>CV Creator</h1>
+      </header>
+
       <main className='workstation'>
-        <InputTab header='Biographical Information'
-          formChildren={
-            bioInputValues.map((item) => <InputItem key={item.nameOnForm}
-                labelName={item.labelName}
-                nameOnForm={item.nameOnForm}
-                placeholder={item.placeholder}
-                type={item.type !== undefined ? item.type : ''}
-                onChange={(e) => handleFieldChange(item.fieldName, e.target.value)}
-              />)
-            }>
-    
-        </InputTab>
+        <section className='ws-element forms'>
+          <InputTab header='Biographical Information'
+            formChildren={
+              bioInputValues.map((item) => <InputItem key={item.nameOnForm}
+                  labelName={item.labelName}
+                  nameOnForm={item.nameOnForm}
+                  placeholder={item.placeholder}
+                  type={item.type !== undefined ? item.type : ''}
+                  onChange={(e) => handleFieldChange(item.fieldName, e.target.value)}
+                />)
+              }>
+      
+          </InputTab>
 
 
-        <InputTab header='Education'
-          formChildren={
-            canEnterEducation ?
-              <>  
-                {educationInputValues.map((item) => 
-                  <InputItem labelName={item.labelName}
-                    key={item.nameOnForm}
-                    name={item.nameOnForm}
-                    placeholder={getDefinitionOrNull(item.placeholder)}
-                    type={getDefinitionOrNull(item.type)}
-                    onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewEducationInput(item.fieldName, e.target.value))}
-                    isRequired={getDefinitionOrNull(item.isRequired)}
-                    isDisabled={getDefinitionOrNull(item.isDisabled)}
-                  />)}
+          <InputTab header='Education'
+            formChildren={
+              canEnterEducation ?
+                <>  
+                  {educationInputValues.map((item) => 
+                    <InputItem labelName={item.labelName}
+                      key={item.nameOnForm}
+                      name={item.nameOnForm}
+                      placeholder={getDefinitionOrNull(item.placeholder)}
+                      type={getDefinitionOrNull(item.type)}
+                      onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewEducationInput(item.fieldName, e.target.value))}
+                      isRequired={getDefinitionOrNull(item.isRequired)}
+                      isDisabled={getDefinitionOrNull(item.isDisabled)}
+                    />)}
 
+                  <div className='buttons-div'>
+                    <button type='button' onClick={() => setCanEnterEducation(false)}>X</button>
+                    <button type='button' onClick={handleSaveEducation}>Save</button>
+                  </div>
+                </>
+              :
+              <button type='button' onClick={() => {setCanEnterEducation(true)}}>+</button>  
+            } 
+            otherItems={educationPreviewItems}>
+
+          </InputTab>
+
+
+          <InputTab header='Work History'
+            formChildren={
+              canEnterWorkInfo &&
+              <>
+                {workInputValues.map((item) => 
+                <InputItem labelName={item.labelName}
+                  key={item.nameOnForm}
+                  nameOnForm={item.nameOnForm}
+                  placeholder={item.placeholder}
+                  type={item.type}
+                  isRequired={getDefinitionOrNull(item.isRequired)}
+                  isDisabled={getDefinitionOrNull(item.isDisabled)}
+                  onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewWorkInput(item.fieldName, e.target.value))}
+                />)}
+                <textarea className='long-text' name='jobDescription' onChange={(e) => handleNewWorkInput('description', e.target.value)}></textarea>
                 <div className='buttons-div'>
-                  <button type='button' onClick={() => setCanEnterEducation(false)}>X</button>
-                  <button type='button' onClick={handleSaveEducation}>Save</button>
+                  <button type='button' onClick={() => setCanEnterWorkInfo(false)}>X</button>
+                  <button type='button' onClick={handleSaveWork}>Save</button>
                 </div>
               </>
-            :
-            <button type='button' onClick={() => {setCanEnterEducation(true)}}>+</button>  
-          } 
-          otherItems={educationPreviewItems}>
+              ||
+              <button type='button' onClick={() => {setCanEnterWorkInfo(!canEnterWorkInfo)}}>+</button>
+            }
+            otherItems={workPreviewItems}/>
 
-        </InputTab>
+          <InputTab header='Skills'
+            formChildren={
+              <textarea className='long-text' 
+                onChange={(e) => handleFieldChange('skills', e.target.value)}
+                value={resumeObject.skills}
+              />
+            }>
+          </InputTab>
+
+          <button onClick={() => setResumeObject(personExample)}>Load example</button>
+        </section>
 
 
-        <InputTab header='Work History'
-          formChildren={
-            canEnterWorkInfo &&
-            <>
-              {workInputValues.map((item) => 
-              <InputItem labelName={item.labelName}
-                key={item.nameOnForm}
-                nameOnForm={item.nameOnForm}
-                placeholder={item.placeholder}
-                type={item.type}
-                isRequired={getDefinitionOrNull(item.isRequired)}
-                isDisabled={getDefinitionOrNull(item.isDisabled)}
-                onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewWorkInput(item.fieldName, e.target.value))}
-              />)}
-              <textarea className='long-text' name='jobDescription' onChange={(e) => handleNewWorkInput('description', e.target.value)}></textarea>
-              <div className='buttons-div'>
-                <button type='button' onClick={() => setCanEnterWorkInfo(false)}>X</button>
-                <button type='button' onClick={handleSaveWork}>Save</button>
-              </div>
-            </>
-            ||
-            <button type='button' onClick={() => {setCanEnterWorkInfo(!canEnterWorkInfo)}}>+</button>
-          }
-          otherItems={
-            workPreviewItems.length > 0 &&
-            workPreviewItems
-          }/>
-
-        <InputTab header='Skills'
-          formChildren={
-            <textarea className='long-text' onChange={(e) => handleFieldChange('skills', e.target.value)}>{resumeObject.skills}</textarea>
-          }>
-        </InputTab>
-
-        <button onClick={() => setResumeObject(personExample)}>Load example</button>
+        <ResumeView className='ws-element' resumeObject={resumeObject}/>
       </main>
 
-
-
-
-
-
-      <section className='preview'>
-          <h3>Name: {resumeObject.name}</h3>
-          <h3>Email: {resumeObject.email}</h3>
-          <h3>Phone: {resumeObject.phone}</h3>
-
-          {educationPreviewItems.length > 0 &&
-           educationPreviewItems}
-
-          {workPreviewItems.length > 0 &&
-          workPreviewItems}
-      </section>
+      <footer className='footer'>
+        <p className='footer-text'>View source code <a href={links.src}>here</a>.</p>
+        <p className='footer-text'>cs-cmd | &#169; {new Date().getFullYear()}, all rights reserved.</p>
+      </footer>
     </>
   )
 }
