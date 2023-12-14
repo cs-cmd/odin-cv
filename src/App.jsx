@@ -35,6 +35,15 @@ function App() {
     setResumeObject(newObject);
   }
 
+  function isEducationInvalid(education) {
+    return (education.name === undefined ||
+          education.location === undefined ||
+          education.curriculum === undefined ||
+          education.from === undefined ||
+          (education.to === undefined && 
+            education.isCurrentlyAttending === undefined))
+  }
+
   // handle if the still-attending checkbox is clicked
   function handleStillAttendingClick(isChecked) {
     setIsCurrentlyAttending(isChecked);
@@ -93,6 +102,28 @@ function App() {
     handleFieldChange(field, newArray);
   }
 
+  function handleEducationFormSubmit(e) {
+    e.preventDefault();
+
+    const newEducationArray = determineIfEdit(resumeObject.education, newEducation);
+    handleFieldChange('education', newEducationArray);
+    
+    setCanEnterEducation(false);
+    setIsCurrentlyAttending(false);
+    setNewEducation({});
+  }
+
+  function handleWorkFormSubmit(e) {
+    e.preventDefault();
+
+    const newWorkArray = determineIfEdit(resumeObject.work, newWork);
+    handleFieldChange('work', newWorkArray);
+
+    setCanEnterWorkInfo(false);
+    setIsCurrentEmployer(false);
+    setNewWork({});
+  }
+
 
   //inputFormatters.
   const bioInputValues = formatBioInputValues();
@@ -100,6 +131,7 @@ function App() {
     handleStillAttendingClick(e.target.checked);
     handleNewEducationInput('to', undefined);
   }, isCurrentlyAttending);
+
   const workInputValues = formatWorkInputValues((e) => {
     handleCurrentEmployerToggle(e.target.checked);
     handleNewWorkInput('to', undefined);
@@ -170,6 +202,7 @@ function App() {
 
 
           <InputTab header='Education'
+            onSubmit={handleEducationFormSubmit}
             formChildren={
               canEnterEducation ?
                 <>  
@@ -179,7 +212,7 @@ function App() {
                       name={item.nameOnForm}
                       placeholder={getDefinitionOrNull(item.placeholder)}
                       type={getDefinitionOrNull(item.type)}
-                      value={newEducation[item.fieldName]}
+                      value={getDefinitionOrNull(newEducation[item.fieldName])}
                       onChange={getDefinitionOrNull(item.onChange) || ((e) => handleNewEducationInput(item.fieldName, e.target.value))}
                       isRequired={getDefinitionOrNull(item.isRequired)}
                       isDisabled={getDefinitionOrNull(item.isDisabled)}
@@ -194,14 +227,7 @@ function App() {
                         setNewEducation({});
                       }
                     }}>X</button>
-                    <button type='button' onClick={() => {
-                          const newEducationArray = determineIfEdit(resumeObject.education, newEducation);
-                          handleFieldChange('education', newEducationArray);
-                          
-                          setCanEnterEducation(false);
-                          setIsCurrentlyAttending(false);
-                          setNewEducation({});
-                    }}>Save</button>
+                    <button type='submit'>Save</button>
                   </div>
                 </>
               :
@@ -213,6 +239,7 @@ function App() {
 
 
           <InputTab header='Work History'
+          onSubmit={handleWorkFormSubmit}
             formChildren={
               canEnterWorkInfo &&
               <>
@@ -237,14 +264,7 @@ function App() {
                       setNewWork({});
                     }
                   }}>X</button>
-                  <button type='button' onClick={() => {
-                        const newWorkArray = determineIfEdit(resumeObject.work, newWork);
-                        handleFieldChange('work', newWorkArray);
-                    
-                        setCanEnterWorkInfo(false);
-                        setIsCurrentEmployer(false);
-                        setNewWork({});
-                  }}>Save</button>
+                  <button type='submit'>Save</button>
                 </div>
               </>
               ||

@@ -4,7 +4,7 @@ export default function InputItem({children, labelName, type = 'text', isDisable
   return (
     <div className='input-item'>
       <label>{labelName}</label>
-      <input required={isRequired} type={type} name={nameOnForm} placeholder={placeholder} onChange={onChange} disabled={isDisabled} value={value}/>
+      <input required={isRequired === null ? true : isRequired} type={type} name={nameOnForm} placeholder={placeholder} onChange={onChange} disabled={isDisabled} value={value}/>
       {children}
     </div>
   )
