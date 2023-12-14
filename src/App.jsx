@@ -193,7 +193,7 @@ function App() {
                   labelName={item.labelName}
                   nameOnForm={item.nameOnForm}
                   placeholder={item.placeholder}
-                  type={item.type !== undefined ? item.type : ''}
+                  type={getDefinitionOrNull(item.type)}
                   onChange={(e) => handleFieldChange(item.fieldName, e.target.value)}
                 />)
               }>
